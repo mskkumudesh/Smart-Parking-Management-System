@@ -1,0 +1,366 @@
+{
+  "info": {
+    "name": "Smart Parking Management System (SPMS)",
+    "description": "Full API collection for the SPMS microservices, routed through the API Gateway on :8080. Run 'Register User' / 'Login' first and update the {{userId}}, {{spaceId}}, {{vehicleId}}, {{reservationId}}, {{paymentId}} collection variables from each response as you go.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "userId", "value": "1" },
+    { "key": "ownerId", "value": "2" },
+    { "key": "spaceId", "value": "1" },
+    { "key": "vehicleId", "value": "1" },
+    { "key": "reservationId", "value": "1" },
+    { "key": "paymentId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "User Service",
+      "item": [
+        {
+          "name": "Register Driver",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nadia Perera\",\n  \"email\": \"nadia@example.com\",\n  \"password\": \"secret123\",\n  \"phone\": \"0771234567\",\n  \"role\": \"DRIVER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Register Owner",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Kasun Silva\",\n  \"email\": \"kasun.owner@example.com\",\n  \"password\": \"secret123\",\n  \"phone\": \"0779876543\",\n  \"role\": \"OWNER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nadia@example.com\",\n  \"password\": \"secret123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get User By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/users/{{userId}}" }
+        },
+        {
+          "name": "Update User",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/{{userId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Nadia Perera-Jayasinghe\",\n  \"phone\": \"0771112223\"\n}"
+            }
+          }
+        },
+        {
+          "name": "List Users (filter by role)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/users?role=DRIVER&page=0&size=20" }
+        },
+        {
+          "name": "Add Booking History Record",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/{{userId}}/history",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"spaceId\": {{spaceId}},\n  \"vehicleId\": {{vehicleId}},\n  \"startTime\": \"2026-08-02T09:00:00\",\n  \"endTime\": \"2026-08-02T11:00:00\",\n  \"status\": \"COMPLETED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Booking History",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/users/{{userId}}/history?page=0&size=20" }
+        },
+        {
+          "name": "Deactivate User",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/users/{{userId}}" }
+        },
+        {
+          "name": "[Error case] Register with duplicate email",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Duplicate Test\",\n  \"email\": \"nadia@example.com\",\n  \"password\": \"secret123\",\n  \"role\": \"DRIVER\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[Error case] Login with wrong password",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/users/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nadia@example.com\",\n  \"password\": \"wrongpass\"\n}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Parking Space Service",
+      "item": [
+        {
+          "name": "Create Parking Space",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/parking/spaces",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": {{ownerId}},\n  \"zoneCode\": \"Z1\",\n  \"city\": \"Colombo\",\n  \"address\": \"123 Galle Road\",\n  \"latitude\": 6.9271,\n  \"longitude\": 79.8612,\n  \"pricePerHour\": 150.00,\n  \"type\": \"OPEN\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Search Spaces (city/zone/status)",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/parking/spaces?city=Colombo&zone=Z1&status=AVAILABLE&page=0&size=20" }
+        },
+        {
+          "name": "Get Space By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}" }
+        },
+        {
+          "name": "Update Space Details",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pricePerHour\": 175.00,\n  \"type\": \"COVERED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Update Space Status (manual or simulated IoT)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}/status",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"OCCUPIED\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Owner's Spaces",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/parking/owners/{{ownerId}}/spaces?page=0&size=20" }
+        },
+        {
+          "name": "Reserve a Space",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}/reserve",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"vehicleId\": {{vehicleId}},\n  \"reservedFrom\": \"2026-08-02T09:00:00\",\n  \"reservedTo\": \"2026-08-02T11:00:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Release a Reservation",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/parking/reservations/{{reservationId}}/release" }
+        },
+        {
+          "name": "List Reservations for a Space",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}/reservations" }
+        },
+        {
+          "name": "Delete Space",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}" }
+        },
+        {
+          "name": "[Error case] Reserve an already-reserved space",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/parking/spaces/{{spaceId}}/reserve",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"reservedFrom\": \"2026-08-02T09:00:00\",\n  \"reservedTo\": \"2026-08-02T11:00:00\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[Error case] Get non-existent space",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/parking/spaces/99999" }
+        }
+      ]
+    },
+    {
+      "name": "Vehicle Service",
+      "item": [
+        {
+          "name": "Register Vehicle",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/vehicles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"plateNumber\": \"WP-CAB-1234\",\n  \"type\": \"CAR\",\n  \"color\": \"White\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Vehicle By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}" }
+        },
+        {
+          "name": "Check Vehicle Exists",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}/exists" }
+        },
+        {
+          "name": "Update Vehicle",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"color\": \"Black\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Vehicles By User",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/vehicles/user/{{userId}}" }
+        },
+        {
+          "name": "Simulate Vehicle Entry",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}/entry",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"spaceId\": {{spaceId}}\n}"
+            }
+          }
+        },
+        {
+          "name": "Simulate Vehicle Exit",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}/exit" }
+        },
+        {
+          "name": "Entry/Exit Logs for Vehicle",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}/logs" }
+        },
+        {
+          "name": "Delete Vehicle",
+          "request": { "method": "DELETE", "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}" }
+        },
+        {
+          "name": "[Error case] Register duplicate plate number",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/vehicles",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"plateNumber\": \"WP-CAB-1234\",\n  \"type\": \"CAR\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[Error case] Exit without an open entry",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/vehicles/{{vehicleId}}/exit" }
+        }
+      ]
+    },
+    {
+      "name": "Payment Service",
+      "item": [
+        {
+          "name": "Initiate Payment (CARD - valid)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/payments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"reservationId\": {{reservationId}},\n  \"amount\": 300.00,\n  \"method\": \"CARD\",\n  \"cardNumber\": \"4539578763621486\",\n  \"cardExpiry\": \"12/27\",\n  \"cardCvv\": \"123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Initiate Payment (WALLET)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/payments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"reservationId\": {{reservationId}},\n  \"amount\": 300.00,\n  \"method\": \"WALLET\"\n}"
+            }
+          }
+        },
+        {
+          "name": "Get Payment By Id",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/payments/{{paymentId}}" }
+        },
+        {
+          "name": "Payments By User",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/payments/user/{{userId}}?page=0&size=20" }
+        },
+        {
+          "name": "Refund Payment",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/payments/{{paymentId}}/refund" }
+        },
+        {
+          "name": "Get Receipt",
+          "request": { "method": "GET", "url": "{{baseUrl}}/api/payments/{{paymentId}}/receipt" }
+        },
+        {
+          "name": "[Error case] Invalid card number (fails Luhn check)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "url": "{{baseUrl}}/api/payments",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": {{userId}},\n  \"reservationId\": {{reservationId}},\n  \"amount\": 300.00,\n  \"method\": \"CARD\",\n  \"cardNumber\": \"1111222233334444\",\n  \"cardExpiry\": \"12/27\",\n  \"cardCvv\": \"123\"\n}"
+            }
+          }
+        },
+        {
+          "name": "[Error case] Refund a non-SUCCESS payment twice",
+          "request": { "method": "POST", "url": "{{baseUrl}}/api/payments/{{paymentId}}/refund" }
+        }
+      ]
+    },
+    {
+      "name": "Infrastructure Health",
+      "item": [
+        { "name": "Eureka Dashboard (open in browser)", "request": { "method": "GET", "url": "http://localhost:8761" } },
+        { "name": "Config Server - user-service config", "request": { "method": "GET", "url": "http://localhost:8888/user-service/default" } },
+        { "name": "Gateway Health", "request": { "method": "GET", "url": "{{baseUrl}}/actuator/health" } }
+      ]
+    }
+  ]
+}
