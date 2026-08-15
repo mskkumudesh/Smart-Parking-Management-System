@@ -1,0 +1,60 @@
+version: "3.8"
+
+# One-command startup for the full SPMS stack.
+# Boot order matters: config-server -> eureka-server -> everything else.
+# depends_on only waits for the container to start, not for Spring Boot to be
+# ready, so services will retry registration/config-fetch until the dependency
+# is actually up (Spring Cloud clients do this by default).
+
+services:
+  config-server:
+    build: ./config-server
+    ports:
+      - "8888:8888"
+
+  eureka-server:
+    build: ./eureka-server
+    ports:
+      - "8761:8761"
+    depends_on:
+      - config-server
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - config-server
+
+  user-service:
+    build: ./user-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - config-server
+
+  parking-space-service:
+    build: ./parking-space-service
+    ports:
+      - "8082:8082"
+    depends_on:
+      - eureka-server
+      - config-server
+
+  vehicle-service:
+    build: ./vehicle-service
+    ports:
+      - "8083:8083"
+    depends_on:
+      - eureka-server
+      - config-server
+
+  payment-service:
+    build: ./payment-service
+    ports:
+      - "8084:8084"
+    depends_on:
+      - eureka-server
+      - config-server
